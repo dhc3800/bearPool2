@@ -2,6 +2,7 @@ package com.dhc3800.bearpool5;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.Intent;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -15,9 +16,14 @@ import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 
 public class NewFlightActivity extends AppCompatActivity implements View.OnClickListener, DatePickerDialog.OnDateSetListener, TimePickerDialog.OnTimeSetListener {
@@ -105,24 +111,27 @@ public class NewFlightActivity extends AppCompatActivity implements View.OnClick
                         departingAirportField.getText().toString(),
                         arrivingAirportField.getText().toString(),
                         spotField.getText().toString(),
-                        this.day, this.month, this.year, this.hour, this.minute);
+                        this.day, this.month, this.year, this.hour, this.minute, mAuth.getCurrentUser().getUid());
 
                 // add to flights db
                 key = databaseRef.child("flights").push().getKey();
-                databaseRef.child("flights").child(key).child("flightNumber").setValue(f.getFlightNum());
-                databaseRef.child("flights").child(key).child("to").setValue(f.getTo());
-                databaseRef.child("flights").child(key).child("from").setValue(f.getFrom());
-                databaseRef.child("flights").child(key).child("leavingSpot").setValue(f.getLeavingSpot());
-                databaseRef.child("flights").child(key).child("uid").setValue(mCurrentUser.getUid());
-                databaseRef.child("flights").child(key).child("grouped").setValue(false);
-                long millis = Utils.parseCalendarValues(this.day, this.month, this.year, this.hour, this.minute);
-                databaseRef.child("flights").child(key).child("datetime").setValue(millis);
+
+//                databaseRef.child("flights").child("number").setValue(0);
+                databaseRef.child("flights").child(key).setValue(f);
+//                databaseRef.child("flights").child(key).child("flightNumber").setValue(f.getFlightNum());
+//                databaseRef.child("flights").child(key).child("to").setValue(f.getTo());
+//                databaseRef.child("flights").child(key).child("from").setValue(f.getFrom());
+//                databaseRef.child("flights").child(key).child("leavingSpot").setValue(f.getLeavingSpot());
+//                databaseRef.child("flights").child(key).child("uid").setValue(mCurrentUser.getUid());
+//                databaseRef.child("flights").child(key).child("grouped").setValue(false);
+//                long millis = Utils.parseCalendarValues(this.day, this.month, this.year, this.hour, this.minute);
+//                databaseRef.child("flights").child(key).child("datetime").setValue(millis);
 
                 DatabaseReference incomingRef = databaseRef.child("airports").child(f.getTo()).child("incoming");
-                incomingRef.child(key).setValue(millis);
+                incomingRef.child(key).setValue(f.dateTime);
 
                 DatabaseReference outgoingRef = databaseRef.child("airports").child(f.getFrom()).child("outgoing");
-                outgoingRef.child(key).setValue(millis);
+                outgoingRef.child(key).setValue(f.dateTime);
 
                 String uid = mCurrentUser.getUid();
                 DatabaseReference usersRef = databaseRef.child("users").child(uid).child("userFlights");
@@ -133,12 +142,40 @@ public class NewFlightActivity extends AppCompatActivity implements View.OnClick
                 updateGroups();
 
 
-                startActivity(new Intent(NewFlightActivity.this, MainActivity.class));
+                startActivity(new Intent(NewFlightActivity.this, MainPage.class));
         }
     }
 
     //checking if there are people to group together and grouping them
     private void updateGroups() {
+        Query flightStuff = FirebaseDatabase.getInstance().getReference("flights").orderByChild("datetime");
+
+        flightStuff.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                long num = dataSnapshot.getChildrenCount();
+                int i = 0;
+                ArrayList<Flight> group =  new ArrayList<>();
+                if (num % 3 == 0) {
+                    for (DataSnapshot snapshot: dataSnapshot.getChildren()) {
+                        if (i < num - 3) {
+                            continue;
+                        }
+
+                        group.add((Flight) snapshot.getValue());
+                    }
+                }
+                //adding a group to the database
+                DatabaseReference groups = FirebaseDatabase.getInstance().getReference("groups");
+                String key = groups.child(mAuth.getUid()).push().getKey();
+                groups.child(mAuth.getUid()).child(key).setValue(group);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
 
     }
 

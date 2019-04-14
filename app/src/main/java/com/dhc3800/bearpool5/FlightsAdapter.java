@@ -42,18 +42,18 @@ public class FlightsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     @Override
     public void onBindViewHolder(@NonNull final RecyclerView.ViewHolder viewHolder, int i) {
         String s = flights.get(i);
-        DatabaseReference flightsDatabaseRef = FirebaseDatabase.getInstance().getReference().child("flights").child(s);
+        DatabaseReference flightsDatabaseRef = FirebaseDatabase.getInstance().getReference().child("flights");
         flightsDatabaseRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                long datetime = dataSnapshot.child("datetime").getValue(Long.class);
-                String flightNumber = dataSnapshot.child("flightNumber").getValue(String.class);
-                String leavingSpot = dataSnapshot.child("leavingSpot").getValue(String.class);
-                String to = dataSnapshot.child("to").getValue(String.class);
-                String from = dataSnapshot.child("from").getValue(String.class);
-
-                String tempSentence = to + " to " + from;
-                ((Item) viewHolder).toFrom.setText(tempSentence);
+//                long datetime = dataSnapshot.child("dateTime").getValue(Long.class);
+//                String flightNumber = dataSnapshot.child("flightNumber").getValue(String.class);
+//                String leavingSpot = dataSnapshot.child("leavingSpot").getValue(String.class);
+//                String to = dataSnapshot.child("to").getValue(String.class);
+//                String from = dataSnapshot.child("from").getValue(String.class);
+//
+//                String tempSentence = to + " to " + from;
+//                ((Item) viewHolder).toFrom.setText(tempSentence);
             }
 
             @Override

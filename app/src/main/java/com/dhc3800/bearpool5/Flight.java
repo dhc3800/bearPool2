@@ -11,10 +11,12 @@ public class Flight {
     public int year;
     public int hour;
     public int minute;
+    public long dateTime;
+    public String uid;
 
     public Flight() {}
 
-    public Flight(String flightNum, String from, String to, String leavingSpot, int day, int month, int year, int hour, int minute) {
+    public Flight(String flightNum, String from, String to, String leavingSpot, int day, int month, int year, int hour, int minute, String uid) {
         this.flightNum = flightNum;
         this.from = from;
         this.to = to;
@@ -24,6 +26,8 @@ public class Flight {
         this.year = year;
         this.hour = hour;
         this.minute = minute;
+        this.uid = uid;
+        this.dateTime =  Utils.parseCalendarValues(this.day, this.month, this.year, this.hour, this.minute);
     }
 
     public int getDay() {
