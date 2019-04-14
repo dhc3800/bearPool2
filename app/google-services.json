@@ -1,0 +1,35 @@
+{
+  "project_info": {
+    "project_number": "477577290806",
+    "firebase_url": "https://bearpool2.firebaseio.com",
+    "project_id": "bearpool2",
+    "storage_bucket": "bearpool2.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:477577290806:android:728d42d90a848965",
+        "android_client_info": {
+          "package_name": "com.dhc3800.bearpool5"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB0iXuRipUl-V-BJ70VOkD6eTc4PKMi_CQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "477577290806-pooi19npjbk8rutapdgnjbmcipaebnr5.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
